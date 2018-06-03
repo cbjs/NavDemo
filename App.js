@@ -6,7 +6,7 @@
 
 import React, { Component } from 'react';
 import { Text, View, } from 'react-native';
-import { createBottomTabNavigator } from 'react-navigation';
+import { TabNavigator } from 'react-navigation';
 
 const ScreenTitle = ({title}) => {
     return <View style={{flex:1, justifyContent: 'center', alignItems: 'center'}}>
@@ -45,7 +45,7 @@ class Explore extends Component {
   }
 }
 
-const Home = createBottomTabNavigator({
+const Home = TabNavigator({
   boards: {
     screen: Boards,
     navigationOptions: ({navigation}) => ({
