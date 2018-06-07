@@ -5,8 +5,8 @@
  */
 
 import React, { Component } from 'react';
-import { Text, View, } from 'react-native';
-import { createBottomTabNavigator } from 'react-navigation';
+import { Text, View, FlatList } from 'react-native';
+import { createMaterialTopTabNavigator } from 'react-navigation';
 
 const ScreenTitle = ({title}) => {
     return <View style={{flex:1, justifyContent: 'center', alignItems: 'center'}}>
@@ -16,7 +16,6 @@ const ScreenTitle = ({title}) => {
 class Boards extends Component {
   render() {
     const { navigation } = this.props;
-    console.warn('render boards');
     return <ScreenTitle title="boards"/>;
   }
 }
@@ -24,7 +23,6 @@ class Boards extends Component {
 class Profile extends Component {
   render() {
     const { navigation } = this.props;
-    console.warn('render profile');
     return <ScreenTitle title="profile"/>;
   }
 }
@@ -32,20 +30,47 @@ class Profile extends Component {
 class Message extends Component {
   render() {
     const { navigation } = this.props;
-    console.warn('render message');
     return <ScreenTitle title="message"/>;
   }
 }
 
 class Explore extends Component {
+  constructor(props) {
+    super(props);
+    this.state = { refreshing: false, data:[{id: 0, text: new Date().toString() }] }
+    this.onRefresh = this.onRefresh.bind(this);
+  }
+
+  onRefresh() {
+    this.setState({refreshing: true});
+
+    setTimeout(() => {
+      let newData = this.state.data.concat([{
+        id: this.state.length,
+        text: new Date().toString()
+      }]);
+
+      this.setState({
+        refreshing: false,
+        data: newData
+      });
+    }, 200);
+  }
+
   render() {
     const { navigation } = this.props;
-    console.warn('render explore');
-    return <ScreenTitle title="explore"/>;
+    return <View style={{flex: 1}}>
+      <FlatList data={this.state.data}
+          refreshing={ this.state.refreshing }
+          keyExtractor={(item, i) => `${item.id} - ${i}`}
+          onRefresh={this.onRefresh.bind(this)}
+          renderItem={({item, index}) => <Text style={{padding: 10}}>{index} - {item.text}</Text>}
+          enableEmptySections/>
+    </View>
   }
 }
 
-const Home = createBottomTabNavigator({
+const Home = createMaterialTopTabNavigator({
   boards: {
     screen: Boards,
     navigationOptions: ({navigation}) => ({
@@ -75,9 +100,9 @@ const Home = createBottomTabNavigator({
   },
 }, {
   initialRouteName: 'explore',
-  tabBarPosition: 'bottom',
-  swipeEnabled: false,
-  animationEnabled: false,
+  tabBarPosition: 'top',
+  swipeEnabled: false, // change to test this bug
+  animationEnabled: true,
   lazy: true,
   tabBarOptions: {
     showLabel: true,
